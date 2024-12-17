@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: weatherapi-ingress
+  labels:
+    app: weatherapi
+spec:
+  defaultBackend:
+    service:
+      name: weatherapi
+      port: 
+        number: 80
+  rules:
+  - host: weather.api
+    http:
+      paths:
+      - backend:
+          service:
+            name: weatherapi
+            port: 
+              number: 80
+        pathType: ImplementationSpecific

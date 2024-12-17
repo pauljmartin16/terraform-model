@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: weatherapi
+  name: weatherapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: weatherapi
+  template:
+    metadata:
+      labels:
+        app: weatherapi
+    spec:
+      containers:
+      - image: 654654297114.dkr.ecr.us-east-1.amazonaws.com/weather-api:latest
+        name: weatherapi
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: appsettings-volume
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        livenessProbe:
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          httpGet:
+            port: 80
+            path: /health/live
+        readinessProbe:
+          initialDelaySeconds: 2
+          periodSeconds: 2
+          httpGet:
+            port: 80
+            path: /health/ready
+      volumes:
+      - name: appsettings-volume
+        configMap:
+          name: weatherapi-configmap
